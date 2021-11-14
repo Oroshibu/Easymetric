@@ -54,43 +54,48 @@ function start()
 		local posx = Easymetric_params.posx
 		local posy = Easymetric_params.posy
 		local rotation = Easymetric_params.rotation + .0
-		local rxlen = xlen * math.cos(math.rad(rotation-90))
-		local rylen = ylen * math.cos(math.rad(rotation))
+		local rxlen = math.floor(xlen * math.cos(math.rad(rotation-90)))
+		local rylen = math.floor(ylen * math.cos(math.rad(rotation)))
 		if Easymetric_params.rotmode then
 			rotation = tonumber(Easymetric_params.rotation2) + .0
 		end
-		-- 0 - 44 / 45 - 90
-		local ratio1 = 2*(rotation/45)
-		local ratio2 = 2/(rotation/45)
-		if rotation > 45 then
-			ratio1 = 2/((90-rotation)/45)
-			ratio2 = 2*((90-rotation)/45)
+
+		if rotation > 0 and rotation < 90 then
+			local ratio1 = 2*(rotation/45)
+			local ratio2 = 2/(rotation/45)
+			if rotation > 45 then
+				ratio1 = 2/((90-rotation)/45)
+				ratio2 = 2*((90-rotation)/45)
+			end
+
+			-- FACE TOP
+			for x = 0, rxlen + rylen + 1 do
+				if x <= rylen then
+					for y = posy - (x+1)/ratio2 - rxlen/ratio1, posy + 1 do
+						copy:drawPixel(x + posx - rxlen - 1, y, Easymetric_params.color1)
+					end
+				else 
+					for y = posy + (x-rylen)/ratio1 - rylen/ratio2 - rxlen/ratio1, posy + 1 do
+						copy:drawPixel(x + posx - rxlen - 1, y-1, Easymetric_params.color1)
+					end
+				end
+			end
+			
+			-- FACE LEFT
+			for x = 0, rxlen do
+				for z = 0, zlen do
+					copy:drawPixel(-x + posx - 1, z + posy - (x+1)/ratio1, Easymetric_params.color2)
+				end
+			end
+			
+			-- FACE RIGHT
+			for y = 0, rylen do
+				for z = 0, zlen do
+					copy:drawPixel(y + posx, z + posy - (y+1)/ratio2, Easymetric_params.color3)
+				end
+			end
 		end
 
-		-- FACE LEFT
-		for x = 0, rxlen do
-			for z = 0, zlen do
-				copy:drawPixel(-x + posx - 1, z + posy - x/ratio1, Easymetric_params.color2)
-			end
-		end
-		-- FACE RIGHT
-		for y = 0, rylen do
-			for z = 0, zlen do
-				copy:drawPixel(y + posx, z + posy - y/ratio2, Easymetric_params.color3)
-			end
-		end
-		-- FACE TOP
-		for x = 0, rxlen + rylen do
-			if x < posx then
-				for y = - xlen * math.cos(math.rad(rotation-90))/ratio1, - xlen * math.cos(math.rad(rotation-90))/ratio1 + 5 do
-					copy:drawPixel(x + posx - xlen * math.cos(math.rad(rotation-90)), y + posy, Easymetric_params.color1)
-				end
-			else 
-				for y = 10, 20 do
-					copy:drawPixel(x + posx - xlen * math.cos(math.rad(rotation-90)), y + posy, Easymetric_params.color1)
-				end
-			end
-		end
 
 		app.activeCel.image:drawImage(copy)
 		app.refresh()
