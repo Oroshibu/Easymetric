@@ -67,33 +67,36 @@ function start()
 				ratio1 = 2/((90-rotation)/45)
 				ratio2 = 2*((90-rotation)/45)
 			end
-
+			
+			local topy = 0
+			local boty = 0
 			-- FACE TOP
 			for x = 0, rxlen + rylen + 1 do
 				if x <= rylen then
-					for y = posy - (x+1)/ratio2 - rxlen/ratio1, posy + 1 do
-						copy:drawPixel(x + posx - rxlen - 1, y, Easymetric_params.color1)
-					end
+					topy = posy - x/ratio2 - rxlen/ratio1
 				else 
-					for y = posy + (x-rylen)/ratio1 - rylen/ratio2 - rxlen/ratio1, posy + 1 do
-						copy:drawPixel(x + posx - rxlen - 1, y-1, Easymetric_params.color1)
-					end
+					topy = posy + ((x+1)-rylen)/ratio1 - rylen/ratio2 - rxlen/ratio1
+				end
+				
+				for y = topy, 100 do
+					copy:drawPixel(x + posx - rxlen - 1, y, Color(255, 0, 0, 128))
 				end
 			end
 			
 			-- FACE LEFT
-			for x = 0, rxlen do
-				for z = 0, zlen do
-					copy:drawPixel(-x + posx - 1, z + posy - (x+1)/ratio1, Easymetric_params.color2)
+			for x = 1, rxlen+1 do
+				for z = 1, zlen+1 do
+					copy:drawPixel(-(x-1) + posx - 1, z + posy - x/ratio1, Easymetric_params.color2)
 				end
 			end
 			
 			-- FACE RIGHT
-			for y = 0, rylen do
-				for z = 0, zlen do
-					copy:drawPixel(y + posx, z + posy - (y+1)/ratio2, Easymetric_params.color3)
+			for y = 1, rylen+1 do
+				for z = 1, zlen+1 do
+					copy:drawPixel((y-1) + posx, z + posy - y/ratio2, Easymetric_params.color3)
 				end
 			end
+			
 		end
 
 
@@ -144,27 +147,27 @@ function start()
 	
 	-- CREATE DIALOG
 	dlg:separator("Position")
-	dlg:slider{id="posx", label="X Y", min=0, max=app.activeSprite.width, value=Easymetric_params.posx, onchange=function() update() end}
-	dlg:slider{id="posy", min=0, max=app.activeSprite.height, value=Easymetric_params.posy, onchange=function() update() end}
+	dlg:slider{id="posx", label="X Y", min=0, max=app.activeSprite.width, value=Easymetric_params.posx, onchange=update}
+	dlg:slider{id="posy", min=0, max=app.activeSprite.height, value=Easymetric_params.posy, onchange=update}
 
 	dlg:separator("Rotation")
 	dlg:radio{id="rotmode", label="Mode", text="Essentials", selected=Easymetric_params.rotmode, onclick=function() change_rotmode() end}
 	dlg:radio{id="rotmode2", text="Slider", selected=not Easymetric_params.rotmode, onclick=function() change_rotmode() end}
-	dlg:combobox{id="rotation2", label="Rotation", option=Easymetric_params.rotation2, options={"0","11.25","22.5","45","67.5","78.75","90"}, onchange=function() update() end, visible=Easymetric_params.rotmode}
-	dlg:slider{id="rotation", label="Rotation", min=0, max=90, value=Easymetric_params.rotation, onchange=function() update() end, visible=not Easymetric_params.rotmode}
+	dlg:combobox{id="rotation2", label="Rotation", option=Easymetric_params.rotation2, options={"0","11.25","22.5","45","67.5","78.75","90"}, onchange=update, visible=Easymetric_params.rotmode}
+	dlg:slider{id="rotation", label="Rotation", min=0, max=90, value=Easymetric_params.rotation, onchange=update, visible=not Easymetric_params.rotmode}
 				  
 	dlg:separator("Size")
-	dlg:slider{id="x", label="X Y Z", min=0, max=app.activeSprite.width / 2, value=Easymetric_params.x, onchange=function() update() end}
-	dlg:slider{id="y", min=0, max=app.activeSprite.width / 2, value=Easymetric_params.y, onchange=function() update() end}
-	dlg:slider{id="z", min=0, max=app.activeSprite.height / 2, value=Easymetric_params.z, onchange=function() update() end}
+	dlg:slider{id="x", label="X Y Z", min=0, max=app.activeSprite.width / 2, value=Easymetric_params.x, onchange=update}
+	dlg:slider{id="y", min=0, max=app.activeSprite.width / 2, value=Easymetric_params.y, onchange=update}
+	dlg:slider{id="z", min=0, max=app.activeSprite.height / 2, value=Easymetric_params.z, onchange=update}
 
 	dlg:separator("Colors")
-	dlg:color {id = "color1", color = Easymetric_params.color1, onchange=function() update() end}
-	dlg:color {id = "color2", color = Easymetric_params.color2, onchange=function() update() end}
-	dlg:color {id = "color3", color = Easymetric_params.color3, onchange=function() update() end}
+	dlg:color {id = "color1", color = Easymetric_params.color1, onchange=update}
+	dlg:color {id = "color2", color = Easymetric_params.color2, onchange=update}
+	dlg:color {id = "color3", color = Easymetric_params.color3, onchange=update}
 
 	dlg:separator()
-	dlg:button{text="Generate",onclick=function() generate() end}
+	dlg:button{text="Generate",onclick=generate}
 	dlg:show()
 	
 	app.command.RemoveLayer()
