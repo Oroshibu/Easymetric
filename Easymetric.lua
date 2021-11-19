@@ -75,7 +75,7 @@ function start()
 				if x <= rylen then
 					topy = posy - x/ratio2 - rxlen/ratio1
 				else 
-					topy = posy + ((x+1)-rylen)/ratio1 - rylen/ratio2 - rxlen/ratio1
+					topy = posy + ((x-1)-rylen)/ratio1 - rylen/ratio2 - rxlen/ratio1
 				end
 				
 				for y = topy, 100 do
